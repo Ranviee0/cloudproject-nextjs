@@ -25,7 +25,7 @@ const LineChart: React.FC<LineChartProps> = ({ username }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get<DataPoint[]>('/read/results/${username}');
+        const response = await api.get<DataPoint[]>(`/read/results/${username}`);
         console.log(response)
         const data = response.data;
 

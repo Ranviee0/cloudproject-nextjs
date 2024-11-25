@@ -18,7 +18,7 @@ export default function Edit({ username }) {
 
   const handleSave = async () => {
     try {
-      const response = await api.put('/update/config/${username}', formData);
+      const response = await api.put(`/update/config/${username}`, formData);
       alert(`Response: ${response.data.message || 'Update successful!'}`);
       setIsEditing(false); // Return to the initial state
       setFormData({ streaming_URL: '', email: '' }); // Clear form data
