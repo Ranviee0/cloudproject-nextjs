@@ -24,8 +24,6 @@ function ByUser() {
 
 export default function page() {
   return(
-    <Suspense>
       <ByUser/>
-    </Suspense>
   )
 }
