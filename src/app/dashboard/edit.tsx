@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState } from "react";
-import axios from 'axios';
 
+import axios from 'axios';
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const api = axios.create({
-  baseURL: "http://0.0.0.0:8000" // Replace with your FastAPI backend URL
+  baseURL: apiUrl // Replace with your FastAPI backend URL
 });
 
 export default function Edit({ username }) {
@@ -21,7 +22,7 @@ export default function Edit({ username }) {
 
   const handleSave = async () => {
     try {
-      const response = await api.put(`/update/config/${username}`, formData);
+      const response = await api.put('/update/config/${username}', formData);
       alert(`Response: ${response.data.message || 'Update successful!'}`);
       setIsEditing(false); // Return to the initial state
       setFormData({ streaming_URL: '', email: '' }); // Clear form data

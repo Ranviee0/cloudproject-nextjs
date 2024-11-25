@@ -20,7 +20,7 @@ const ProcessedImages = ({ username }: ProcessedImagesProps) => {
     const fetchImages = async () => {
       try {
         // Use the new endpoint
-        const response = await api.get(`/read/images/${username}`);
+        const response = await api.get('/read/images/${username}');
         setImages(response.data);
       } catch (err: any) {
         setError(err.response?.data?.detail || 'Error fetching images');

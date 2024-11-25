@@ -2,10 +2,11 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Chart from 'chart.js/auto';
-import axios from 'axios';
 
+import axios from 'axios';
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const api = axios.create({
-  baseURL: "http://0.0.0.0:8000" // Replace with your FastAPI backend URL
+  baseURL: apiUrl // Replace with your FastAPI backend URL
 });
 
 interface DataPoint {
@@ -24,7 +25,7 @@ const LineChart: React.FC<LineChartProps> = ({ username }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get<DataPoint[]>(`/read/results/${username}`);
+        const response = await api.get<DataPoint[]>('/read/results/${username}');
         const data = response.data;
 
         const labels = data.map((item) => new Date(item.DATE_TIME).toLocaleTimeString());

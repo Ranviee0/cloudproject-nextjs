@@ -34,12 +34,12 @@ const ResultManagement: React.FC = () => {
   // Handle /delete/result/{username} submit
   const handleDeleteSubmit = async () => {
     try {
-      const response = await api.delete(`/delete/result/${deleteUsername}`);
-      alert(`All results from user ${deleteUsername} deleted successfully!`);
+      const response = await api.delete('/delete/result/${deleteUsername}');
+      alert('All results from user ${deleteUsername} deleted successfully!');
       setDeleteUsername(""); // Reset username field
     } catch (error: any) {
       console.error(error);
-      alert(`Error deleting results: ${error.response?.data?.detail || error.message}`);
+      alert('Error deleting results: ${error.response?.data?.detail || error.message}');
     }
   };
 
