@@ -5,6 +5,8 @@ import Graph from './graph';
 import Edit from './edit';
 
 import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
+
 
 export default function Page() {
   const searchParams = useSearchParams()
@@ -16,9 +18,11 @@ export default function Page() {
 
   return (
   <div>
+    <Suspense>
     <h3>Username: {user}</h3>
     <Edit username={user}/>
     <Graph username={user}/>
     <ProcessedImages username={user}/>
+    </Suspense>
   </div>)
 }
