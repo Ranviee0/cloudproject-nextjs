@@ -26,6 +26,7 @@ const LineChart: React.FC<LineChartProps> = ({ username }) => {
     const fetchData = async () => {
       try {
         const response = await api.get<DataPoint[]>('/read/results/${username}');
+        console.log(response)
         const data = response.data;
 
         const labels = data.map((item) => new Date(item.DATE_TIME).toLocaleTimeString());
