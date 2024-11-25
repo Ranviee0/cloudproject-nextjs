@@ -1,7 +1,11 @@
 'use client';
 
 import React, { useState } from "react";
-import api from '../../utils/api'; // Adjust the import path if needed
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: "http://0.0.0.0:8000" // Replace with your FastAPI backend URL
+});
 
 export default function Edit({ username }) {
   const [isEditing, setIsEditing] = useState(false);

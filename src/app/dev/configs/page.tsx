@@ -1,6 +1,11 @@
 'use client';
 import { useEffect, useState, ReactNode } from 'react';
-import api from '../../../utils/api';
+
+import axios from 'axios';
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const api = axios.create({
+  baseURL: apiUrl
+});
 
 const ConfigTablePage = () => {
   const [configData, setConfigData] = useState<any[]>([]);

@@ -1,7 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import api from '../../utils/api';
+
+import axios from 'axios';
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const api = axios.create({
+  baseURL: apiUrl // Replace with your FastAPI backend URL
+});
 
 interface ProcessedImagesProps {
   username: string; // The username to filter the images by

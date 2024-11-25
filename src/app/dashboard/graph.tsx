@@ -2,7 +2,11 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Chart from 'chart.js/auto';
-import api from '../../utils/api'; // Adjust the path to your API utility
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: "http://0.0.0.0:8000" // Replace with your FastAPI backend URL
+});
 
 interface DataPoint {
   DATE_TIME: string;
