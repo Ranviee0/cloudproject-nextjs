@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from "react";
-import Chart, { ChartConfiguration } from 'chart.js/auto';
+import Chart, { ChartConfiguration } from 'chart.js';
 import api from "../../utils/api";
 
 interface GraphProps {
