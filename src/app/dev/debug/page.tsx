@@ -2,11 +2,7 @@
 
 import React, { useState } from "react";
 
-import axios from 'axios';
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-const api = axios.create({
-  baseURL: apiUrl // Replace with your FastAPI backend URL
-});
+import api from '../../../utils/api'
 
 const ResultManagement: React.FC = () => {
   // State for /create/result form
