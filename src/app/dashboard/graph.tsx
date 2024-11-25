@@ -1,81 +1,88 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from "react";
-import Chart, { ChartConfiguration } from 'chart.js';
-import api from "../../utils/api";
+import React, { useEffect, useRef, useState } from 'react';
+import Chart from 'chart.js/auto';
+import api from '../../utils/api'; // Adjust the path to your API utility
 
-interface GraphProps {
-  username: string; // Username passed as a prop
+interface DataPoint {
+  DATE_TIME: string;
+  result: number;
 }
 
-const Graph: React.FC<GraphProps> = ({ username }) => {
+interface LineChartProps {
+  username: string;
+}
+
+const LineChart: React.FC<LineChartProps> = ({ username }) => {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
-  const [chartInstance, setChartInstance] = useState<Chart | null>(null);
+  const [chartData, setChartData] = useState<{ labels: string[]; results: number[] } | null>(null);
 
   useEffect(() => {
-    if (username) {
-      fetchResults();
-    }
+    const fetchData = async () => {
+      try {
+        const response = await api.get<DataPoint[]>(`/read/results/${username}`);
+        const data = response.data;
+
+        const labels = data.map((item) => new Date(item.DATE_TIME).toLocaleTimeString());
+        const results = data.map((item) => item.result);
+
+        setChartData({ labels, results });
+      } catch (error) {
+        console.error('Error fetching chart data:', error);
+      }
+    };
+
+    fetchData();
   }, [username]);
 
-  const fetchResults = async () => {
-    try {
-      const response = await api.get(`/read/results/${username}`);
-      const data = response.data;
+  useEffect(() => {
+    if (!chartData || !chartRef.current) return;
 
-      // Extracting data for graph
-      const labels = data.map((entry: any) => entry.DATE_TIME);
-      const results = data.map((entry: any) => entry.result);
-
-      const newChartData: ChartConfiguration<'line'> = {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [
-            {
-              label: "User Results Over Time",
-              data: results,
-              borderColor: "rgba(75,192,192,1)",
-              backgroundColor: "rgba(75,192,192,0.2)",
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: "top",
-            },
-            title: {
-              display: true,
-              text: `Results for ${username}`,
-            },
+    const chart = new Chart(chartRef.current, {
+      type: 'line',
+      data: {
+        labels: chartData.labels,
+        datasets: [
+          {
+            label: 'Results over Time',
+            data: chartData.results,
+            borderColor: 'blue',
+            backgroundColor: 'rgba(0, 0, 255, 0.1)',
+            tension: 0.1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
           },
         },
-      };
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Time',
+            },
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Result',
+            },
+            beginAtZero: true,
+          },
+        },
+      },
+    });
 
-      if (chartRef.current) {
-        if (chartInstance) {
-          chartInstance.destroy();
-        }
-        const newInstance = new Chart(chartRef.current, newChartData);
-        setChartInstance(newInstance);
-      }
-    } catch (error: any) {
-      console.error(error);
-      alert(`Error fetching results: ${error.response?.data?.detail || error.message}`);
-    }
-  };
+    return () => {
+      chart.destroy(); // Clean up the chart instance on unmount
+    };
+  }, [chartData]);
 
-  return (
-    <div>
-      <div>
-        <canvas
-         
-        ref={chartRef} />
-      </div>
-    </div>
-  );
+  return <canvas ref={chartRef}></canvas>;
 };
 
-export default Graph;
+export default LineChart;
