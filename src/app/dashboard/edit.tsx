@@ -1,6 +1,7 @@
 "use client";
 
 import './styles.css';
+import axios from 'axios';
 
 import React, { useState, useEffect } from "react";
 import api from "../../utils/api";
@@ -74,6 +75,23 @@ export default function Edit({ username }) {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleAdhocClick = async (e) => {
+    e.preventDefault(); // Prevent default behavior of the event
+  
+    try {
+      // Replace {username} with the actual prop value
+
+      let a = JSON.stringify({username});
+      const response = await axios.post(
+        'https://w7pp3r8hpd.execute-api.ap-southeast-1.amazonaws.com/adhocStage', JSON.stringify({username})
+      );
+  
+      console.log('Response:', response.data); // Handle the success response
+    } catch (error: any) {
+      console.error('Error:', error.message); // Handle errors
+    }
+  };
+
   const handleMonitoringChange = async (status: number) => {
     try {
       const response = await api.put(
@@ -137,9 +155,14 @@ export default function Edit({ username }) {
               </button>
             </div>
           ) : (
+            <div>
+            <button onClick={handleAdhocClick} className="button edit">
+              Ad-hoc
+            </button>  
             <button onClick={handleEditClick} className="button edit">
               Edit URL and email
             </button>
+            </div>
           )}
         </div>
         <div className="monitoring-section">
