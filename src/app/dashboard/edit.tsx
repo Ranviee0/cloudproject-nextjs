@@ -1,63 +1,171 @@
-'use client';
+"use client";
 
-import React, { useState } from "react";
+import './styles.css';
 
-import api from '../../utils/api'
+import React, { useState, useEffect } from "react";
+import api from "../../utils/api";
 
 export default function Edit({ username }) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    streaming_URL: '',
-    email: ''
+    streaming_URL: "",
+    email: "",
   });
+  const [displayData, setDisplayData] = useState({
+    streaming_URL: "",
+    email: "",
+  });
+
+  const [monitoringStatus, setMonitoringStatus] = useState(1);
+
+  const handleSave = async () => {
+    try {
+      const response = await api.put(`/update/config/${username}`, formData);
+      alert(`Response: ${response.data.message || "Update successful!"}`);
+      setIsEditing(false); // Return to the initial state
+      setFormData({ streaming_URL: "", email: "" }); // Clear form data
+      setDisplayData(formData); // Update the display data
+    } catch (error: any) {
+      alert(
+        `Error: ${
+          error.response?.data?.message || "Failed to update configuration"
+        }`
+      );
+    }
+  };
+
+  useEffect(() => {
+    const fetchConfigData = async () => {
+      try {
+        const response = await api.get(`/read/config/${username}`);
+        if (response.data) {
+          setDisplayData({
+            streaming_URL: response.data.streaming_URL || "",
+            email: response.data.email || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching configuration data:", error);
+      }
+    };
+
+    fetchConfigData();
+  }, [username]);
+
+  useEffect(() => {
+    // Fetch the initial Monitoring_status on component mount
+    const fetchMonitoringStatus = async () => {
+      try {
+        const response = await api.get(`/read/status/${username}`);
+        setMonitoringStatus(response.data.Monitoring_status); // Set the fetched status
+      } catch (error: any) {
+        alert(
+          `Error: ${
+            error.response?.data?.message || "Failed to fetch monitoring status"
+          }`
+        );
+      }
+    };
+    fetchMonitoringStatus(); // Call the function here
+  }, [username]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSave = async () => {
+  const handleMonitoringChange = async (status: number) => {
     try {
-      const response = await api.put(`/update/config/${username}`, formData);
-      alert(`Response: ${response.data.message || 'Update successful!'}`);
-      setIsEditing(false); // Return to the initial state
-      setFormData({ streaming_URL: '', email: '' }); // Clear form data
+      const response = await api.put(
+        `/update/status/${username}?status=${status}`
+      );
+      setMonitoringStatus(status);
+      alert(`Monitoring updated: ${status === 1 ? "On" : "Off"}`);
     } catch (error: any) {
-      alert(`Error: ${error.response?.data?.message || 'Failed to update configuration'}`);
+      alert(
+        `Error: ${
+          error.response?.data?.message || "Failed to update monitoring status"
+        }`
+      );
     }
   };
 
+  const handleEditClick = () => {
+    // Populate formData with the current displayData
+    setFormData(displayData);
+    setIsEditing(true);
+  };
+
   return (
-    <div>
-      {isEditing ? (
-        <div>
-          <div>
-            <label>Streaming URL:</label>
-            <input
-              type="text"
-              name="streaming_URL"
-              value={formData.streaming_URL}
-              onChange={handleInputChange}
-              placeholder="Enter streaming URL"
-            />
-          </div>
-          <div>
-            <label>Email:</label>
-            <input
-              type="text"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="Enter email"
-            />
-          </div>
-          <button onClick={handleSave}>Save</button>
+    <div className="container">
+      <div className="card">
+        <div className="info">
+          <p>
+            <strong>Streaming URL:</strong> {displayData.streaming_URL}
+          </p>
+          <p>
+            <strong>Email:</strong> {displayData.email}
+          </p>
         </div>
-      ) : (
-        <button onClick={() => setIsEditing(true)}>Edit URL and email</button>
-      )}
+        <div className="edit-section">
+          {isEditing ? (
+            <div className="form">
+              <div className="form-group">
+                <label>Streaming URL:</label>
+                <input
+                  type="text"
+                  name="streaming_URL"
+                  value={formData.streaming_URL}
+                  onChange={handleInputChange}
+                  placeholder="Enter streaming URL"
+                  className="input"
+                />
+              </div>
+              <div className="form-group">
+                <label>Email:</label>
+                <input
+                  type="text"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Enter email"
+                  className="input"
+                />
+              </div>
+              <button onClick={handleSave} className="button save">
+                Save
+              </button>
+            </div>
+          ) : (
+            <button onClick={handleEditClick} className="button edit">
+              Edit URL and email
+            </button>
+          )}
+        </div>
+        <div className="monitoring-section">
+          <p>Monitoring Status</p>
+          <label className="radio-label">
+            <input
+              type="radio"
+              name="monitoring"
+              value="1"
+              checked={monitoringStatus === 1}
+              onChange={() => handleMonitoringChange(1)}
+            />
+            On
+          </label>
+          <label className="radio-label">
+            <input
+              type="radio"
+              name="monitoring"
+              value="0"
+              checked={monitoringStatus === 0}
+              onChange={() => handleMonitoringChange(0)}
+            />
+            Off
+          </label>
+        </div>
+      </div>
     </div>
   );
 }
-
-  
