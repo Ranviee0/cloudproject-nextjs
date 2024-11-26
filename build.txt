@@ -1,0 +1,1 @@
+docker build --build-arg NEXT_PUBLIC_API_URL=http://54.179.227.109:8000 -t new-nextjs .
